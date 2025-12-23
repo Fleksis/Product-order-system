@@ -17,9 +17,7 @@ class AuthTest extends TestCase
     {
         $password = fake()->password(8);
 
-        $response = $this->withHeaders([
-            'Accept' => 'application/json',
-        ])->post('/api/register', [
+        $response = $this->postJson('/api/register', [
             'firstname' => fake()->firstname(),
             'lastname' => fake()->lastName(),
             'email' => fake()->email(),
