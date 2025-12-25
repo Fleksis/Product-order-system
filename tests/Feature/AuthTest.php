@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\RolesEnum;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -10,6 +11,8 @@ use Tests\TestCase;
 class AuthTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected bool $seed = true;
 
     /**
      * Tests registration flow
@@ -38,7 +41,7 @@ class AuthTest extends TestCase
 
         $user = User::factory()->create([
             'password' => $password,
-        ]);
+        ])->assignRole(RolesEnum::USER->value);
 
         $response = $this->postJson('/api/login', [
             'email' => $user->email,
@@ -58,7 +61,7 @@ class AuthTest extends TestCase
     }
 
     public function test_user_cannot_login_with_wrong_password(): void {
-        $user = User::factory()->create();
+        $user = User::factory()->create()->assignRole(RolesEnum::USER->value);
 
         $response = $this->postJson('/api/login', [
             'email' => $user->email,
