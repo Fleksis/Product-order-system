@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\RolesEnum;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -31,5 +32,8 @@ class DatabaseSeeder extends Seeder
             'email' => 'user@email.com',
             'password' => 'user123',
         ])->assignRole($userRole);
+
+        // Creates products
+        Product::factory(100)->create();
     }
 }
