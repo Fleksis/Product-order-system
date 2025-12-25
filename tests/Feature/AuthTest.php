@@ -51,7 +51,8 @@ class AuthTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_user_cannot_login_with_wrong_email(): void {
+    public function test_user_cannot_login_with_wrong_email(): void
+    {
         $response = $this->postJson('/api/login', [
             'email' => 'test@test.test',
             'password' => 'Test123',
@@ -60,7 +61,8 @@ class AuthTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_user_cannot_login_with_wrong_password(): void {
+    public function test_user_cannot_login_with_wrong_password(): void
+    {
         $user = User::factory()->create()->assignRole(RolesEnum::USER->value);
 
         $response = $this->postJson('/api/login', [
