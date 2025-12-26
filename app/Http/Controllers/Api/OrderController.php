@@ -92,7 +92,7 @@ class OrderController extends Controller
 
         $productsId = collect($validated['products'])->pluck('id');
 
-        $modelProducts = Product::select('id', 'price', 'available_quantity')
+        $modelProducts = Product::select('id', 'price', 'stock')
             ->whereIn('id', $productsId)
             ->get()
             ->keyBy('id');
@@ -122,7 +122,7 @@ class OrderController extends Controller
                 $products = $pivotProducts->whereIn('id', $syncChangedProducts);
 
                 foreach ($products as $product) {
-                    $product->decrement('available_quantity', $product->pivot->quantity);
+                    $product->decrement('stock', $product->pivot->quantity);
                 }
             }
 
@@ -130,7 +130,7 @@ class OrderController extends Controller
                 $products = Product::whereIn('id', $syncChangedProducts)->get();
 
                 foreach ($products as $product) {
-                    $product->increment('available_quantity', $orderProducts[$product->id]->pivot->quantity);
+                    $product->increment('stock', $orderProducts[$product->id]->pivot->quantity);
                 }
             }
 
@@ -143,7 +143,7 @@ class OrderController extends Controller
                     $quantityDifference = $orderProducts[$product->id]->pivot->quantity - $pivotProductQuantity;
 
                     if ($quantityDifference !== 0) {
-                        $product->increment('available_quantity', $quantityDifference);
+                        $product->increment('stock', $quantityDifference);
                     }
                 }
             }

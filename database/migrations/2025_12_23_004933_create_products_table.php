@@ -12,7 +12,7 @@ return new class extends Migration {
             $table->string('name');
             $table->string('description');
             $table->decimal('price');
-            $table->integer('available_quantity');
+            $table->integer('stock');
             $table->timestamps();
             $table->softDeletes();
         });

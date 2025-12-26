@@ -18,9 +18,9 @@ class HasEnoughStock implements ValidationRule
         $index = explode('.', $attribute)[1];
         $itemName = explode('.', $attribute)[0];
 
-        $available = Product::select('available_quantity')
+        $available = Product::select('stock')
             ->find(request()->input("products.$index.id"))
-            ->available_quantity;
+            ->stock;
 
         if ($value > $available) {
             $fail("The $itemName is out of stock.");
