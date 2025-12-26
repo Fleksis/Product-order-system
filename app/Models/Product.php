@@ -20,6 +20,11 @@ class Product extends Model
 
     public function orders(): BelongsToMany
     {
-        return $this->belongsToMany(Order::class, 'order_product', 'product_id', 'order_id');
+        return $this->belongsToMany(Order::class, 'order_product', 'product_id', 'order_id')
+            ->withPivot('price', 'quantity');
     }
+
+    protected $casts = [
+        'price' => 'decimal:2',
+    ];
 }
