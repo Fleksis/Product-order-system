@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function register(RegisterRequest $request) {
+    public function register(RegisterRequest $request)
+    {
         $validated = $request->validated();
 
         $user = User::create($validated)->assignRole(RolesEnum::USER->value);;
@@ -29,7 +30,8 @@ class AuthController extends Controller
         ]);
     }
 
-    public function login(LoginRequest $request) {
+    public function login(LoginRequest $request)
+    {
         $validated = $request->validated();
 
         $user = User::where('email', $validated['email'])->first();
@@ -54,7 +56,8 @@ class AuthController extends Controller
         ]);
     }
 
-    public function logout() {
+    public function logout()
+    {
         auth()->user()->currentAccessToken()->delete();
 
         return response()->json([
@@ -65,7 +68,8 @@ class AuthController extends Controller
         ]);
     }
 
-    public function user() {
+    public function user()
+    {
         return new UserResource(auth()->user());
     }
 }

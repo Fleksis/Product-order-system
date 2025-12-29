@@ -86,14 +86,15 @@ class OrderController extends Controller
     /**
      * Process order by calculating total price for order
      */
-    private function processOrder(array $validated) {
+    private function processOrder(array $validated)
+    {
         $products = [];
         $total = 0;
 
-        $productsId = collect($validated['products'])->pluck('id');
+        $productsIds = collect($validated['products'])->pluck('id');
 
         $modelProducts = Product::select('id', 'price', 'stock')
-            ->whereIn('id', $productsId)
+            ->whereIn('id', $productsIds)
             ->get()
             ->keyBy('id');
 
@@ -114,7 +115,8 @@ class OrderController extends Controller
     /**
      * Calculates changes in product stock
      */
-    private function processProductsQuantity(array $syncChanges, Order $order, Collection $orderProducts = null) {
+    private function processProductsQuantity(array $syncChanges, Order $order, Collection $orderProducts = null)
+    {
         $pivotProducts = $order->products()->get();
 
         foreach($syncChanges as $key => $syncChangedProducts) {
