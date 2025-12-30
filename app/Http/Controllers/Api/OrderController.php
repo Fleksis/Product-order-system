@@ -92,7 +92,7 @@ class OrderController extends Controller
             $this->processProductsQuantity(
                 ['detached' => $orderProducts->pluck('id')->toArray()],
                 $order,
-                $orderProducts->keyBy('id')
+                $orderProducts->keyBy('id'),
             );
         }
 
@@ -140,7 +140,7 @@ class OrderController extends Controller
         $this->processProductsQuantity(
             ['detached' => $orderProducts->pluck('id')->toArray()],
             $order,
-            $orderProducts->keyBy('id')
+            $orderProducts->keyBy('id'),
         );
 
         return response()->json([
