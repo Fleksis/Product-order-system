@@ -48,7 +48,7 @@ class ProductTest extends TestCase
                 'name' => fake()->word(),
                 'description' => fake()->sentence(),
                 'price' => fake()->randomFloat(2),
-                'available_quantity' => fake()->randomNumber(2, true),
+                'stock' => fake()->randomNumber(2, true),
             ]);
 
         $response->assertStatus(201);
@@ -61,7 +61,7 @@ class ProductTest extends TestCase
                 'name' => fake()->word(),
                 'description' => fake()->sentence(),
                 'price' => fake()->randomFloat(2),
-                'available_quantity' => fake()->randomNumber(2, true),
+                'stock' => fake()->randomNumber(2, true),
             ]);
 
         $response->assertForbidden();
@@ -87,7 +87,7 @@ class ProductTest extends TestCase
                 'name' => fake()->word(),
                 'description' => fake()->sentence(),
                 'price' => fake()->randomFloat(2),
-                'available_quantity' => fake()->randomNumber(2, true),
+                'stock' => fake()->randomNumber(2, true),
             ]);
 
         $response->assertStatus(200);
@@ -100,7 +100,7 @@ class ProductTest extends TestCase
                 'name' => fake()->word(),
                 'description' => fake()->sentence(),
                 'price' => fake()->randomFloat(2),
-                'available_quantity' => fake()->randomNumber(2, true),
+                'stock' => fake()->randomNumber(2, true),
             ]);
 
         $response->assertForbidden();

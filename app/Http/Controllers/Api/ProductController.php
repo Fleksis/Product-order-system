@@ -15,7 +15,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = isset(request()->page) ? Product::paginate(request()->pagination ?? 10) : Product::all();
-        return ProductResource::collection($products);
+        return ProductResource::collection($products->sortByDesc('id'));
     }
 
     /**

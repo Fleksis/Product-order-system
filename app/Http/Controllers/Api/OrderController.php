@@ -18,7 +18,7 @@ class OrderController extends Controller
     public function index()
     {
         $orders = isset(request()->page) ? Order::paginate(request()->pagination ?? 10) : Order::all();
-        return OrderResource::collection($orders);
+        return OrderResource::collection($orders->sortByDesc('id'));
     }
 
     /**
