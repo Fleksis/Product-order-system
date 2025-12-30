@@ -23,4 +23,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     });
 
     Route::apiResource('orders', OrderController::class)->only(['store', 'destroy']);
+    Route::get('/cancel-order/{order}', [OrderController::class, 'cancelOrder']);
 });

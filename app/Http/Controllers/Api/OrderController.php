@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\OrderStatusesEnum;
+use App\Enums\RolesEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\OrderRequest;
 use App\Http\Resources\OrderResource;
@@ -55,6 +56,18 @@ class OrderController extends Controller
     public function update(OrderRequest $request, Order $order)
     {
         $validated = $request->validated();
+
+        if ($order->status === OrderStatusesEnum::CANCELED->value
+            || $order->status === OrderStatusesEnum::DELETED->value
+        ) {
+            return response()->json([
+                'data' => [
+                    'status' => 'error',
+                    'message' => 'The order is canceled or deleted.',
+                ],
+            ], 400);
+        }
+
         $orderProducts = $order->products->keyBy('id');
 
         [$products, $total] = $this->processOrder($validated);
@@ -73,12 +86,67 @@ class OrderController extends Controller
      */
     public function destroy(Order $order)
     {
+        $orderProducts = $order->products;
+
+        if ($order->status !== OrderStatusesEnum::CANCELED->value) {
+            $this->processProductsQuantity(
+                ['detached' => $orderProducts->pluck('id')->toArray()],
+                $order,
+                $orderProducts->keyBy('id')
+            );
+        }
+
+        $order->update([
+            'status' => OrderStatusesEnum::DELETED->value,
+        ]);
         $order->delete();
 
         return response()->json([
             'data' => [
                 'status' => 'success',
                 'message' => 'Order deleted successfully!',
+            ],
+        ]);
+    }
+
+    public function cancelOrder(Order $order) {
+        $user = auth()->user();
+
+        if ($user->id !== $order->user_id && !$user->hasRole(RolesEnum::ADMIN)) {
+            return response()->json([
+                'data' => [
+                    'status' => 'error',
+                    'message' => 'You are not allowed to cancel the order.',
+                ],
+            ], 400);
+        }
+
+        if ($order->status === OrderStatusesEnum::CANCELED->value
+            || $order->status === OrderStatusesEnum::DELETED->value
+        ) {
+            return response()->json([
+                'data' => [
+                    'status' => 'error',
+                    'message' => 'The order is already canceled or deleted.',
+                ],
+            ], 400);
+        }
+
+        $order->update([
+            'status' => OrderStatusesEnum::CANCELED->value,
+        ]);
+
+        $orderProducts = $order->products;
+        $this->processProductsQuantity(
+            ['detached' => $orderProducts->pluck('id')->toArray()],
+            $order,
+            $orderProducts->keyBy('id')
+        );
+
+        return response()->json([
+            'data' => [
+                'status' => 'success',
+                'message' => 'Order canceled successfully!',
             ],
         ]);
     }
@@ -119,6 +187,7 @@ class OrderController extends Controller
     {
         $pivotProducts = $order->products()->get();
 
+        $syncChanges = array_filter($syncChanges);
         foreach($syncChanges as $key => $syncChangedProducts) {
             if ($key === 'attached') {
                 $products = $pivotProducts->whereIn('id', $syncChangedProducts);
