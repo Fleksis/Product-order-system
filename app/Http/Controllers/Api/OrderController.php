@@ -22,6 +22,11 @@ class OrderController extends Controller
         return OrderResource::collection($orders->sortByDesc('id'));
     }
 
+    public function userOrders()
+    {
+        return OrderResource::collection(Order::where('user_id', auth()->id())->get());
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -47,6 +52,17 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
+        $user = auth()->user();
+
+        if ($user->id !== $order->user_id && !$user->hasRole(RolesEnum::ADMIN)) {
+            return response()->json([
+                'data' => [
+                    'status' => 'error',
+                    'message' => 'You are not allowed to view the order.',
+                ],
+            ], 403);
+        }
+
         return new OrderResource($order);
     }
 
@@ -118,16 +134,17 @@ class OrderController extends Controller
                     'status' => 'error',
                     'message' => 'You are not allowed to cancel the order.',
                 ],
-            ], 400);
+            ], 403);
         }
 
         if ($order->status === OrderStatusesEnum::CANCELED->value
             || $order->status === OrderStatusesEnum::DELETED->value
+            || $order->status === OrderStatusesEnum::COMPLETED->value
         ) {
             return response()->json([
                 'data' => [
                     'status' => 'error',
-                    'message' => 'The order is already canceled or deleted.',
+                    'message' => 'The order is already canceled, deleted or completed.',
                 ],
             ], 400);
         }
@@ -147,6 +164,32 @@ class OrderController extends Controller
             'data' => [
                 'status' => 'success',
                 'message' => 'Order canceled successfully!',
+            ],
+        ]);
+    }
+
+    public function completeOrder(Order $order)
+    {
+        if ($order->status === OrderStatusesEnum::CANCELED->value
+            || $order->status === OrderStatusesEnum::DELETED->value
+            || $order->status === OrderStatusesEnum::COMPLETED->value
+        ) {
+            return response()->json([
+                'data' => [
+                    'status' => 'error',
+                    'message' => 'The order is already completed, canceled or deleted.',
+                ],
+            ], 400);
+        }
+
+        $order->update([
+            'status' => OrderStatusesEnum::COMPLETED->value,
+        ]);
+
+        return response()->json([
+            'data' => [
+                'status' => 'success',
+                'message' => 'Order completed successfully!',
             ],
         ]);
     }

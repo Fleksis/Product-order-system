@@ -19,9 +19,11 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::group(['middleware' => ['role:' . RolesEnum::ADMIN->value]], function () {
         Route::apiResource('products', ProductController::class)->only(['store', 'update', 'destroy']);
-        Route::apiResource('orders', OrderController::class)->only(['index', 'show', 'update']);
+        Route::apiResource('orders', OrderController::class)->only(['index', 'update']);
+        Route::get('/complete-order/{order}', [OrderController::class, 'completeOrder']);
     });
 
-    Route::apiResource('orders', OrderController::class)->only(['store', 'destroy']);
+    Route::get('/user-orders', [OrderController::class, 'userOrders']);
+    Route::apiResource('orders', OrderController::class)->only(['store', 'show', 'destroy']);
     Route::get('/cancel-order/{order}', [OrderController::class, 'cancelOrder']);
 });
