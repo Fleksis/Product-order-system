@@ -47,7 +47,7 @@ class ProductTest extends TestCase
             ->postJson('/api/products', [
                 'name' => fake()->word(),
                 'description' => fake()->sentence(),
-                'price' => fake()->randomFloat(2),
+                'price' => number_format(fake()->randomFloat(2, 0, 9999.99), 2, '.', ''),
                 'stock' => fake()->randomNumber(2, true),
             ]);
 
@@ -86,7 +86,7 @@ class ProductTest extends TestCase
             ->putJson('/api/products/1', [
                 'name' => fake()->word(),
                 'description' => fake()->sentence(),
-                'price' => fake()->randomFloat(2),
+                'price' => number_format(fake()->randomFloat(2, 0, 9999.99), 2, '.', ''),
                 'stock' => fake()->randomNumber(2, true),
             ]);
 
